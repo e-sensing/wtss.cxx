@@ -1,2 +1,2 @@
-# wtss.cxx
-Web Time Series Service for C++
+# C++ Client API for Web Time Series Service
+
