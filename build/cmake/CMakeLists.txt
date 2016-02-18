@@ -16,7 +16,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with WTSS.CXX. See LICENSE. If not, write to
-#  e-sensing team at <esensning-team@dpi.inpe.br>.
+#  e-sensing team at <esensing-team@dpi.inpe.br>.
 #
 #  Description: Main CMake script for WTSS.CXX build system.
 #
