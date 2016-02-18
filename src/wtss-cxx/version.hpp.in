@@ -21,28 +21,28 @@
 
   \brief WTSS.CXX version information.
 
-  \author Gilberto Ribeiro de Queiroz
+  \author Matheus Cavassan Zaglia
  */
 
-#ifndef __WTSS_CXX_WTSS_CXX_VERSION_HPP__
-#define __WTSS_CXX_WTSS_CXX_VERSION_HPP__
+#ifndef __WTSS_CXX_VERSION_HPP__
+#define __WTSS_CXX_VERSION_HPP__
 
-//! Major version of TWS (or version).
-#define TWS_VERSION_MAJOR @TWS_VERSION_MAJOR@
+//! Major version of WTSS.CXX (or version).
+#define WTSS_CXX_VERSION_MAJOR @WTSS_CXX_VERSION_MAJOR@
 
-//! Minor version of TWS (or revision).
-#define TWS_VERSION_MINOR @TWS_VERSION_MINOR@
+//! Minor version of WTSS.CXX (or revision).
+#define WTSS_CXX_VERSION_MINOR @WTSS_CXX_VERSION_MINOR@
 
-//! Patched version of TWS (or patch).
-#define TWS_VERSION_PATCH @TWS_VERSION_PATCH@
+//! Patched version of WTSS.CXX (or patch).
+#define WTSS_CXX_VERSION_PATCH @WTSS_CXX_VERSION_PATCH@
 
 //! Release status: alpha, beta, rc (release candidate), stable.
-#define TWS_VERSION_STATUS "@TWS_VERSION_STATUS@"
+#define WTSS_CXX_VERSION_STATUS "@WTSS_CXX_VERSION_STATUS@"
 
-//! A string description of TWS version.
-#define TWS_VERSION_STRING "@TWS_VERSION_STRING@"
+//! A string description of WTSS.CXX version.
+#define WTSS_CXX_VERSION_STRING "@WTSS_CXX_VERSION_STRING@"
 
-//! TWS version.
-#define TWS_VERSION @TWS_VERSION@
+//! WTSS.CXX version.
+#define WTSS_CXX_VERSION @WTSS_CXX_VERSION@
 
-#endif  // __WTSS_CXX_WTSS_CXX_VERSION_HPP__
+#endif  // __WTSS_CXX_VERSION_HPP__

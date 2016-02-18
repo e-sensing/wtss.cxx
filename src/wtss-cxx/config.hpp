@@ -17,17 +17,17 @@
  */
 
 /*!
-  \file tws/config.hpp
+  \file wtss-cxx/config.hpp
 
-  \brief Proxy file for the real tws_config.hpp file.
+  \brief Proxy file for the real wtss_cxx_config.hpp file.
 
-  \author Gilberto Ribeiro de Queiroz
+  \author Matheus Cavassan Zaglia
  */
 
-#ifndef __TWS_CONFIG_HPP__
-#define __TWS_CONFIG_HPP__
+#ifndef __WTSS_CXX_CONFIG_HPP__
+#define __WTSS_CXX_CONFIG_HPP__
 
-// TWS
-#include "tws_config.hpp"
+// WTSS.CXX
+#include "wtss_cxx_config.hpp"
 
-#endif  // __TWS_CONFIG_HPP__
+#endif  // __WTSS_CXX_CONFIG_HPP__
