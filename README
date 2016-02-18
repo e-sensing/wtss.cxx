@@ -1,0 +1,50 @@
+  WTSS.CXX - C++ Client API for Web Time Series Service
+  =====================================================
+
+WTSS.CXX is a free and open source client library .... (purpose)
+
+WTSS.CXX is part of the TerraLib family of geotechnologies:
+http://www.dpi.inpe.br/terralib5.
+
+Instructions
+------------
+
+The documents below are in the root directory of WTSS.CXX codebase and they explain the details of the codebase:
+
+- BRANCHES-AND-TAGS.: Notes on how to switch to the right branch to work on or the right tag to get the source code.
+
+- BUILD-INSTRUCTIONS: Notes on how to compile and install TWS for each platform.
+
+- CHANGELOG.........: List of changes in TWS source code.
+
+- DEPENDENCIES......: The list of third-party library you must install before building TWS.
+
+- LICENSE...........: Licence statement in plain txt format.
+
+- README............: This file. It contains instructions about how to build and how is organized TWS plataform source code.
+
+
+Directories
+-----------
+
+build....: Contains the CMake scripts with commands, macros and functions used to build the environment for compiling libraries and executables in different platforms using the CMake tool.
+
+install..: Bash scripts for helping building and installing TWS.
+
+licenses.: Copyright notices of third-party libraries used by TWS.
+
+src......: Contains the source code of TWS and the source code of automatic tests.
+
+
+Reporting Bugs
+--------------
+
+Any problem should be reported to esensing-team@dpi.inpe.br.
+
+
+For more information on WTSS.CXX, please, visit its main web page at: http://github.com/e-sensing/wtss.cxx.
+
+
+  February 2016, e-Sensing Team <esensing-team@dpi.inpe.br>
+
+
