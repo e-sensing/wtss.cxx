@@ -21,7 +21,7 @@
 
   \brief Brief.
 
-  \author Matheus
+  \author Matheus Cavassan Zaglia
  */
 
 #ifndef __WTSS_CXX_WTSS_HPP__

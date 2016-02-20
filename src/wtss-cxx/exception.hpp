@@ -21,7 +21,7 @@
 
   \brief Base exception class exceptions in TerraLib Web Services.
 
-  \author Gilberto Ribeiro de Queiroz
+  \author Matheus Cavassan Zaglia
  */
 
 #ifndef __WTSS_CXX_EXCEPTION_HPP__
@@ -34,7 +34,7 @@
 // Boost
 #include <boost/exception/all.hpp>
 
-//! TerraLib Web Services namespace.
+//! WTSS.CXX.
 namespace wtss
 {
 
