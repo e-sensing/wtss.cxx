@@ -23,31 +23,77 @@
 
   \author Matheus Cavassan Zaglia
   \author Gilberto Ribeiro de Queiroz
-  
+
  */
 
 // WTSS.CXX
 #include "wtss.hpp"
+#include "exception.hpp"
 
-wtss_cxx::wtss::wtss(const std::string& /*server_uri*/)
+//cpp-netlib
+
+#include <boost/network/protocol/http/client.hpp>
+
+// RapidJSON
+
+#include <rapidjson/document.h>
+#include <rapidjson/filestream.h>
+
+//Boost
+#include <boost/format.hpp>
+
+namespace http = boost::network::http;
+
+wtss_cxx::wtss::wtss(const std::string& server_uri)
 {
+    wtss_cxx::wtss::server_uri = server_uri;
 }
 
 wtss_cxx::wtss::~wtss()
 {
 }
-    
+
 std::vector<std::string>
 wtss_cxx::wtss::list_coverages() const
 {
-  return std::vector<std::string>();
+   std::vector<std::string> result;
+
+  http::client client;
+  http::client::request request(wtss_cxx::wtss::server_uri+"/mds/product_list?output_format=json");
+  http::client::response response = client.get(request);
+
+  std::string json = body(response);
+
+  rapidjson::Document doc;
+  rapidjson::Document::AllocatorType& allocator = doc.GetAllocator();
+
+  doc.Parse<0>(json.c_str());
+  if(doc.HasParseError()){
+      throw ;
+  }
+  if(!doc.IsObject()){
+      throw ;
+  }
+  if(!doc.HasMember("products")){
+      throw;
+  }
+  if(!doc["products"].IsArray()){
+      throw;
+  }
+
+  for (rapidjson::Value::ConstValueIterator itr = doc["products"].Begin(); itr != doc["products"].End(); ++itr)
+
+    result.push_back(itr->GetString());
+
+  return result;
 }
-    
+
 wtss_cxx::geoarray_t
-wtss_cxx::wtss::describe_coverage(const std::string& /*cv_name*/) const
+wtss_cxx::wtss::describe_coverage(const std::string& cv_name) const
 {
+
   wtss_cxx::geoarray_t result;
-  
+
   return result;
 }
 
@@ -55,6 +101,6 @@ wtss_cxx::timeseries_query_result_t
 wtss_cxx::wtss::time_series(const timeseries_query_t& /*query*/) const
 {
   timeseries_query_result_t result;
-  
+
   return result;
 }
