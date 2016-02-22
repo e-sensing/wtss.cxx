@@ -128,20 +128,21 @@ include_directories(${CMAKE_BINARY_DIR})
 # first check of libraries
 #
 
-#find_package(Boost 1.54.0 REQUIRED system date_time chrono log timer filesystem program_options thread)
-find_package(Boost 1.54.0 REQUIRED system)
-
+# log timer
+find_package(Boost 1.54.0 REQUIRED system filesystem date_time chrono thread program_options regex)
 if(NOT Boost_FOUND)
   message(FATAL_ERROR "WTSS_CXX: could not find required Boost libraries!")
 endif()
 
+find_package(cppnetlib REQUIRED)
+if(NOT Boost_FOUND)
+  message(FATAL_ERROR "WTSS_CXX: could not find required CppNetLib libraries!")
+endif()
+
 find_package(RapidJSON REQUIRED)
-
-#find_package(CppNetLib REQUIRED)
-
-#find_package(OpenSSL)
-
-#find_package(Doxygen)
+if(NOT Boost_FOUND)
+  message(FATAL_ERROR "WTSS_CXX: could not find required RapidJSON libraries!")
+endif()
 
 
 #
@@ -152,8 +153,9 @@ find_package(RapidJSON REQUIRED)
 # add include targets
 #
 include_directories(${Boost_INCLUDE_DIR})
+include_directories(${CPPNETLIB_INCLUDE_DIRS})
 include_directories(${RAPIDJSON_INCLUDE_DIR})
-#include_directories(${CPPNETLIB_INCLUDE_DIR})
+
 
 #
 # build targets
@@ -165,8 +167,14 @@ file(GLOB WTSS_CXX_HDR_FILES ${WTSS_CXX_ABSOLUTE_ROOT_DIR}/src/wtss-cxx/*.hpp)
 
 add_library(wtss_cxx_client SHARED ${WTSS_CXX_SRC_FILES} ${WTSS_CXX_HDR_FILES})
 
-target_link_libraries(wtss_cxx_client ${Boost_SYSTEM_LIBRARY})
-
+target_link_libraries(wtss_cxx_client cppnetlib-uri
+                                      cppnetlib-client-connections)
+#${Boost_THREAD_LIBRARY}
+#${Boost_DATE_TIME_LIBRARY}
+#${Boost_REGEX_LIBRARY}
+#${Boost_SYSTEM_LIBRARY}
+#${Boost_FILESYSTEM_LIBRARY}
+#${Boost_CHRONO_LIBRARY}
 
 # wtss.cxx unit-test
 include_directories(${WTSS_CXX_ABSOLUTE_ROOT_DIR}/src)

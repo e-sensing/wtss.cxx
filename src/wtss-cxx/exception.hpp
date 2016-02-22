@@ -35,7 +35,7 @@
 #include <boost/exception/all.hpp>
 
 //! WTSS.CXX.
-namespace wtss
+namespace wtss_cxx
 {
 
   //! Base exception class for WTSS.CXX.

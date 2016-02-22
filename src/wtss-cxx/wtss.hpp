@@ -19,13 +19,34 @@
 /*!
   \file wtss-cxx/wtss.hpp
 
-  \brief Brief.
+  \brief The Web Time Series Service Client API for C++.
 
+  \author Gilberto Ribeiro de Queiroz
   \author Matheus Cavassan Zaglia
  */
 
 #ifndef __WTSS_CXX_WTSS_HPP__
 #define __WTSS_CXX_WTSS_HPP__
 
+// WTSS
+#include "config.hpp"
+#include "data_types.hpp"
+
+namespace wtss_cxx
+{
+  class wtss
+  {
+    wtss(const std::string& server_uri);
+    
+    ~wtss();
+    
+    std::vector<std::string> list_coverages() const;
+    
+    geoarray_t describe_coverage(const std::string& cv_name) const;
+    
+    timeseries_query_result_t time_series(const timeseries_query_t& query) const;
+  };
+
+}  // end namespace wtss_cxx
 
 #endif // __WTSS_CXX_WTSS_HPP__
