@@ -96,6 +96,28 @@ Follow the build steps below according to your platform.
 
 ### Building on Mac OS X El Capitan
 
+Consider to use the following flags:
+- The wtss.cxx final library and header installation directory:
+```
+-DCMAKE_INSTALL_PREFIX:PATH="/Users/user_name/MyLibs"
+```
+
+- The places where CMake can search for 3rd-party libraries and auxiliary cmake scripts:
+```
+-DCMAKE_PREFIX_PATH:PATH="/Users/user_name/MyLibs;/Users/user_name/MyLibs/lib/cmake"
+```
+
+- If you want to build wtss.cxx on *Debug* mode:
+```
+-DCMAKE_BUILD_TYPE:STRING="Debug"
+```
+otherwise, just replace Debug in the above option for *Release*:
+
+- If you prefer to inform the place where cppnetlib is installed, you can use the following option:
+```
+-Dcppnetlib_DIR:PATH="/Users/user_name/MyLibs/lib/cmake/cppnetlib"
+```
+
 ### Building on Microsoft Windows with Visual C++
 
 This is not supported yet! If you need to build on Windows, please, let us know!
