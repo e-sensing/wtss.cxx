@@ -36,15 +36,17 @@ namespace wtss_cxx
 {
   class wtss
   {
-    wtss(const std::string& server_uri);
+    public:
+
+      wtss(const std::string& server_uri);
     
-    ~wtss();
+      ~wtss();
     
-    std::vector<std::string> list_coverages() const;
+      std::vector<std::string> list_coverages() const;
     
-    geoarray_t describe_coverage(const std::string& cv_name) const;
+      geoarray_t describe_coverage(const std::string& cv_name) const;
     
-    timeseries_query_result_t time_series(const timeseries_query_t& query) const;
+      timeseries_query_result_t time_series(const timeseries_query_t& query) const;
   };
 
 }  // end namespace wtss_cxx
