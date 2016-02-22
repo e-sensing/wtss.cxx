@@ -39,14 +39,18 @@ namespace wtss_cxx
     public:
 
       wtss(const std::string& server_uri);
-    
+
       ~wtss();
-    
+
       std::vector<std::string> list_coverages() const;
-    
+
       geoarray_t describe_coverage(const std::string& cv_name) const;
-    
+
       timeseries_query_result_t time_series(const timeseries_query_t& query) const;
+
+    protected:
+      std::string server_uri;
+
   };
 
 }  // end namespace wtss_cxx
