@@ -24,13 +24,15 @@
   \author Matheus Cavassan Zaglia
  */
 
+// wtss.cxx
 #include "utils.hpp"
+#include "exception.hpp"
 
 //cpp-netlib
-
 #include <boost/network/protocol/http/client.hpp>
 
-
+// Boost
+#include <boost/format.hpp>
 
 rapidjson::Document
 wtss_cxx::json_request(const std::string& server_uri)
@@ -42,8 +44,15 @@ wtss_cxx::json_request(const std::string& server_uri)
   std::string json = body(response);
 
   rapidjson::Document doc;
-  rapidjson::Document::AllocatorType& allocator = doc.GetAllocator();
+
   doc.Parse<0>(json.c_str());
+
+  if(doc.HasParseError())
+  {
+    boost::format err_msg("error parsing requested document '%1%': %2%.");
+
+    throw parse_error() << error_description((err_msg % server_uri % doc.GetParseError()).str());
+  }
 
   return doc;
 }

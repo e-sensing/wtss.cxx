@@ -47,7 +47,10 @@ namespace wtss_cxx
   //! Type for handling invalid parameter value in service request.
   struct invalid_argument_error: virtual exception { };
 
-  //! The base type for error report messages.
+  //! Type for handling invalid document.
+  struct parse_error: virtual exception { };
+
+    //! The base type for error report messages.
   typedef boost::error_info<struct tag_error_description, std::string> error_description;
 
 }   // end namespace wtss
