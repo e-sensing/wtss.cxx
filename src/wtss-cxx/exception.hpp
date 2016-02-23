@@ -17,9 +17,9 @@
  */
 
 /*!
-  \file tws/exception.hpp
+  \file wtss-cxx/exception.hpp
 
-  \brief Base exception class exceptions in TerraLib Web Services.
+  \brief Base exception class in WTSS.CXX.
 
   \author Matheus Cavassan Zaglia
  */
