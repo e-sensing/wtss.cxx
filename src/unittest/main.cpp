@@ -51,6 +51,7 @@ int main(int argc, char* argv[])
   wtss_cxx::timeseries_query_t q;
   q.coverage_name = coverages.front();
   q.attributes.push_back(cv.attributes.front().name);
+  q.attributes.push_back(cv.attributes.back().name);
   q.longitude = -54.0;
   q.latitude = -12;
   
