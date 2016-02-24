@@ -96,6 +96,15 @@ Follow the build steps below according to your platform.
 
 ### Building on Mac OS X El Capitan
 
+#### Running the Unit-test
+
+In the shell you can start the wtss_cxx_unittest application using the following syntax:
+```
+DYLD_FALLBACK_LIBRARY_PATH=/Users/gribeiro/MyLibs/lib ./wtss_cxx_unittest
+```
+
+#### Tips on Mac OS X
+
 Consider to use the following flags:
 - The wtss.cxx final library and header installation directory:
 ```

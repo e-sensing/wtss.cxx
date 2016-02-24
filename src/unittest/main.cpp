@@ -26,6 +26,7 @@
 
 // WTSS.CXX
 #include <wtss-cxx/wtss.hpp>
+#include <wtss-cxx/exception.hpp>
 
 // STL
 #include <cstdlib>
@@ -35,27 +36,51 @@ int main(int argc, char* argv[])
 {
   wtss_cxx::wtss chronos("http://www.dpi.inpe.br/mds");
   
+  try
+  {
 // listing the available coverages
-  std::vector<std::string> coverages = chronos.list_coverages();
+    std::vector<std::string> coverages = chronos.list_coverages();
   
-  if(coverages.empty())
-    return EXIT_SUCCESS;
+    if(coverages.empty())
+      return EXIT_SUCCESS;
   
 // describing first coverage
-  wtss_cxx::geoarray_t cv = chronos.describe_coverage(coverages.front());
+    wtss_cxx::geoarray_t cv = chronos.describe_coverage(coverages.front());
   
-  if(cv.attributes.empty())
-    return EXIT_SUCCESS;
+    if(cv.attributes.empty())
+      return EXIT_SUCCESS;
   
 // retrieving timeseries for first coverage and its first attribute
-  wtss_cxx::timeseries_query_t q;
-  q.coverage_name = coverages.front();
-  q.attributes.push_back(cv.attributes.front().name);
-  q.attributes.push_back(cv.attributes.back().name);
-  q.longitude = -54.0;
-  q.latitude = -12;
+    wtss_cxx::timeseries_query_t q;
+    q.coverage_name = coverages.front();
+    q.attributes.push_back(cv.attributes.front().name);
+    q.attributes.push_back(cv.attributes.back().name);
+    q.longitude = -54.0;
+    q.latitude = -12;
   
-  wtss_cxx::timeseries_query_result_t result = chronos.time_series(q);
+    wtss_cxx::timeseries_query_result_t result = chronos.time_series(q);
+  }
+  catch(const boost::exception& e)
+  {
+    if(const std::string* d = boost::get_error_info<wtss_cxx::error_description>(e))
+      std::cout << "\n\nthe following error has occurried: " << *d << std::endl;
+    else
+      std::cout << "\n\nan unknown error has occurried" << std::endl;
+    
+    return EXIT_FAILURE;
+  }
+  catch(const std::exception& e)
+  {
+    std::cout << "\n\nthe following error has occurried: " << e.what() << std::endl;
+    
+    return EXIT_FAILURE;
+  }
+  catch(...)
+  {
+    std::cout << "\n\nan unknown error has occurried." << std::endl;
+    
+    return EXIT_FAILURE;
+  }
   
   return EXIT_SUCCESS;
 }

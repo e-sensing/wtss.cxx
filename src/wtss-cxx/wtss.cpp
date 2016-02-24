@@ -101,9 +101,8 @@ wtss_cxx::wtss::describe_coverage(const std::string& cv_name) const
     rapidjson::Document j_desc(wtss_cxx::json_request(wtss_cxx::wtss::server_uri+"/mds/dataset_metadata?product="
                                                       +cv_name+"&dataset="+itr->GetString()+"&output_format=json"));
     if(!j_desc.IsObject())
-    {
-        continue ;
-    }
+      continue;
+
     wtss_cxx::attribute_t attribute_t;
 //    wtss_cxx::dimension_t dimension_t;
 
@@ -129,8 +128,9 @@ wtss_cxx::wtss::time_series(const timeseries_query_t& query) const
   for (std::vector<std::string>::const_iterator it = query.attributes.begin(); it != query.attributes.end();++it)
   {
       datasets.append(*it );
+    
       if(query.attributes.end() != it + 1)
-        datasets.append(",") ;
+        datasets.append(",");
   }
   rapidjson::Document doc(wtss_cxx::json_request(wtss_cxx::wtss::server_uri+"/mds/query?product="
                                                   +query.coverage_name+"&datasets="+datasets+

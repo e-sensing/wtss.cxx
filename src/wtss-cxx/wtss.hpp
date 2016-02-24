@@ -49,8 +49,8 @@ namespace wtss_cxx
       timeseries_query_result_t time_series(const timeseries_query_t& query) const;
 
     protected:
-      std::string server_uri;
 
+      std::string server_uri;
   };
 
 }  // end namespace wtss_cxx
