@@ -200,17 +200,17 @@ source_group("wtss_unittest\\Header Files"  FILES ${WTSS_CXX_UTEST_HDR_FILES})
 configure_file(${WTSS_CXX_ABSOLUTE_ROOT_DIR}/src/wtss-cxx/version.hpp.in
                ${CMAKE_BINARY_DIR}/wtss_cxx_version.hpp @ONLY)
 
-
 configure_file(${WTSS_CXX_ABSOLUTE_ROOT_DIR}/src/wtss-cxx/config.hpp.in
               ${CMAKE_BINARY_DIR}/wtss_cxx_config.hpp @ONLY)
 
-
+configure_file(${CMAKE_SOURCE_DIR}/wtss_cxx-config-version.cmake.in
+               ${CMAKE_BINARY_DIR}/wtss_cxx-config-version.cmake @ONLY)
 
 configure_file(${CMAKE_SOURCE_DIR}/wtss_cxx-config.cmake.in
                ${CMAKE_BINARY_DIR}/wtss_cxx-config.cmake @ONLY)
 
-configure_file(${CMAKE_SOURCE_DIR}/wtss_cxx-config-version.cmake.in
-               ${CMAKE_BINARY_DIR}/wtss_cxx-config-version.cmake @ONLY)
+configure_file(${CMAKE_SOURCE_DIR}/wtss_cxx-config-pkg.cmake.in
+               ${CMAKE_BINARY_DIR}/pkg/wtss_cxx-config.cmake @ONLY)
 
 #
 # install and targets export
@@ -222,15 +222,13 @@ install(TARGETS wtss_cxx_client
         LIBRARY DESTINATION ${WTSS_CXX_DESTINATION_LIBRARY} COMPONENT runtime
         ARCHIVE DESTINATION ${WTSS_CXX_DESTINATION_ARCHIVE} COMPONENT runtime)
 
-
-
 install(EXPORT wtss_cxx-targets
         DESTINATION ${WTSS_CXX_DESTINATION_LIBRARY}/cmake/wtss_cxx-${WTSS_CXX_VERSION_STRING}
         FILE wtss_cxx-exports.cmake
         COMPONENT devel)
 
-install(FILES ${wtss_cxx_BINARY_DIR}/wtss_cxx-config.cmake
-              ${wtss_cxx_BINARY_DIR}/wtss_cxx-config-version.cmake
+install(FILES ${CMAKE_BINARY_DIR}/pkg/wtss_cxx-config.cmake
+              ${CMAKE_BINARY_DIR}/wtss_cxx-config-version.cmake
         DESTINATION ${WTSS_CXX_DESTINATION_LIBRARY}/cmake/wtss_cxx-${WTSS_CXX_VERSION_STRING}
         COMPONENT devel)
 
@@ -243,4 +241,4 @@ install(FILES ${CMAKE_BINARY_DIR}/wtss_cxx_version.hpp
 install(FILES ${WTSS_CXX_UTEST_SRC_FILES}
         DESTINATION ${WTSS_CXX_DESTINATION_UNITTEST} COMPONENT devel)
 
-export(TARGETS wtss_cxx_client FILE ${wtss_cxx_BINARY_DIR}/wtss_cxx-exports.cmake)
+export(TARGETS wtss_cxx_client FILE ${CMAKE_BINARY_DIR}/wtss_cxx-exports.cmake)
