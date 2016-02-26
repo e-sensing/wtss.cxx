@@ -28,6 +28,6 @@
 #define __WTSS_CXX_CONFIG_HPP__
 
 // WTSS.CXX
-//#include "wtss_cxx_config.hpp"
+#include "wtss_cxx_config.hpp"
 
 #endif  // __WTSS_CXX_CONFIG_HPP__
