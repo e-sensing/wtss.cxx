@@ -41,16 +41,19 @@ namespace wtss_cxx
   //! Base exception class for WTSS.CXX.
   struct exception: virtual std::exception, virtual boost::exception { };
 
-  //! Type for handling missing parameter value in service request.
+  //! Exception type for missing parameter value in service request.
   struct missing_argument_error: virtual exception { };
 
-  //! Type for handling invalid parameter value in service request.
+  //! Exception type for invalid parameter value in service request.
   struct invalid_argument_error: virtual exception { };
 
-  //! Type for handling invalid document.
+  //! Exception type when parsing a document (JSON, XML or any other format).
   struct parse_error: virtual exception { };
 
-    //! The base type for error report messages.
+  //! Exception type for an http server response error.
+  struct http_response_error: virtual exception { };
+
+  //! The base type for error report messages.
   typedef boost::error_info<struct tag_error_description, std::string> error_description;
 
 }   // end namespace wtss
