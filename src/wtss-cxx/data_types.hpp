@@ -169,6 +169,12 @@ namespace wtss_cxx
     }
   };
 
+  struct date
+  {
+    int day;
+    int month;
+    int year;
+  };
   //! Dimension description of an array.
   struct dimension_t
   {
@@ -231,6 +237,7 @@ namespace wtss_cxx
   {
     std::string name;
     std::vector<queried_attribute_t> queried_attributes;
+    std::vector<date> timeline;
   };
   
   struct timeseries_query_t

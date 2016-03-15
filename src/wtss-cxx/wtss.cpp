@@ -38,7 +38,7 @@
 
 //Boost
 #include <boost/lexical_cast.hpp>
-
+#include <boost/algorithm/string.hpp>
 //STL
 #include <string>
 
@@ -81,8 +81,8 @@ wtss_cxx::wtss::describe_coverage(const std::string& cv_name) const
   rapidjson::Document doc(wtss_cxx::json_request(wtss_cxx::wtss::server_uri + "/mds/dataset_list?product="
                                                  + cv_name + "&output_format=json"));
 
-  if(!doc.IsObject())
-      throw parse_error() << error_description("Invalid JSON document: expecting a object!");
+ if(!doc.IsObject())
+     throw parse_error() << error_description("Invalid JSON document: expecting a object!");
 
   if(!doc.HasMember("datasets"))
     throw parse_error() << error_description("Invalid JSON document: expecting a member named \"datasets\"!");
@@ -139,10 +139,12 @@ wtss_cxx::wtss::time_series(const timeseries_query_t& query) const
                                                   "&output_format=json"));
 
   const rapidjson::Value& j_doc = doc["result"]["datasets"];
+  const rapidjson::Value& j_timeline = doc["result"]["timeline"];
   for (rapidjson::Value::ConstValueIterator itr = j_doc.Begin(); itr != j_doc.End(); ++itr)
   {
      const rapidjson::Value& j_dataset = (*itr);
      queried_attribute_t.name = j_dataset["dataset"].GetString();
+     queried_attribute_t.values.clear();
      if(!j_dataset["values"].IsNull())
      {
        if(j_dataset["values"].IsArray())
@@ -152,6 +154,18 @@ wtss_cxx::wtss::time_series(const timeseries_query_t& query) const
          queried_attribute_t.values.push_back(j_dataset["values"].GetDouble());
      }
      result.coverage.queried_attributes.push_back(queried_attribute_t);
+  }
+  for(rapidjson::Value::ConstValueIterator itr = j_timeline.Begin(); itr != j_timeline.End(); ++itr)
+  {
+    const rapidjson::Value& j_date = (*itr);
+    std::vector<std::string> date_split;
+    std::string timeline = j_date.GetString();
+    boost::algorithm::split(date_split,timeline,boost::algorithm::is_any_of("-"));
+    date d;
+    d.day   = boost::lexical_cast<int>(date_split[2]);
+    d.month = boost::lexical_cast<int>(date_split[1]);
+    d.year  = boost::lexical_cast<int>(date_split[0]);
+    result.coverage.timeline.push_back(d);
   }
   result.query = query;
   return result;
