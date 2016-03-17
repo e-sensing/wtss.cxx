@@ -85,14 +85,43 @@ Make sure you have all the third-party library dependencies before trying to bui
 The `build/cmake` folder contains a CMake project for building wtss.cxx.
 
 Until now its build has been tested on:
-- Linux Ubuntu 14.04
+- Linux Ubuntu 14.04 LTS
 - Mac OS X El Capitan
 
 You should use at least CMake version 2.8.12 for building wtss.cxx. Older versions than this may not work properly.
 
 Follow the build steps below according to your platform.
 
-### Building on Linux with GNU G++
+### Building on Linux Ubuntu 14.04 LTS with GNU G++
+
+1.1 Open a Terminal (ctrl+alt+T).
+
+1.2 We will assume that the codebase (all the source tree) is located at:
+```
+/home/user/mydevel/wtss.cxx/codebase
+```
+1.3 Create a folder out of the wtss.cxx source tree to generate the build system, for example:
+```
+$ cd /home/user/mydevel/wtss.cxx && mkdir build-release && cd build-release
+```
+
+1.4 Type the following in your terminal to configure your build:
+
+```
+$ cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX:PATH="/home/user/mylibs/wtss.cxx" -DCMAKE_INSTALL_RPATH:PATH="/home/user/mylibs/wtss.cxx/lib" -DCMAKE_SKIP_BUILD_RPATH:BOOL="OFF" -DCMAKE_BUILD_WITH_INSTALL_RPATH:BOOL="OFF" -DCMAKE_INSTALL_RPATH_USE_LINK_PATH:BOOL="ON" -DCMAKE_PREFIX_PATH:PATH="/home/user/mylibs;/home/user/mylibs/lib/cmake" -DCMAKE_BUILD_TYPE:STRING="Release" ../codebase/build/cmake
+```
+1.5 Building:
+
+```
+$ make -j 4
+```
+
+1.6 Installing:
+
+```
+$ make install
+```
+
 
 ### Building on Mac OS X El Capitan
 
