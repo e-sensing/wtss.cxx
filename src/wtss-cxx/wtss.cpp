@@ -54,22 +54,22 @@ wtss_cxx::wtss::~wtss()
 std::vector<std::string>
 wtss_cxx::wtss::list_coverages() const
 {
-  rapidjson::Document doc(wtss_cxx::json_request(wtss_cxx::wtss::server_uri+"/mds/product_list?output_format=json"));
+  rapidjson::Document doc(wtss_cxx::json_request(wtss_cxx::wtss::server_uri+"/list_coverages?output_format=json"));
 
   if(!doc.IsObject())
       throw parse_error() << error_description("Invalid JSON document: expecting a object!");
 
-  if(!doc.HasMember("products"))
-    throw parse_error() << error_description("Invalid JSON document: expecting a member named \"product\"!");
+  if(!doc.HasMember("coverages"))
+    throw parse_error() << error_description("Invalid JSON document: expecting a member named \"coverages\"!");
 
-  const rapidjson::Value& j_products = doc["products"];
+  const rapidjson::Value& j_coverages = doc["coverages"];
 
-  if(!j_products.IsArray())
-    throw parse_error() << error_description("Invalid JSON document: member named \"product\" must be an array!");
+  if(!j_coverages.IsArray())
+    throw parse_error() << error_description("Invalid JSON document: member named \"coverages\" must be an array!");
 
   std::vector<std::string> result;
 
-  for (rapidjson::Value::ConstValueIterator itr = j_products.Begin(); itr != j_products.End(); ++itr)
+  for (rapidjson::Value::ConstValueIterator itr = j_coverages.Begin(); itr != j_coverages.End(); ++itr)
     result.push_back(itr->GetString());
 
   return result;
@@ -78,42 +78,71 @@ wtss_cxx::wtss::list_coverages() const
 wtss_cxx::geoarray_t
 wtss_cxx::wtss::describe_coverage(const std::string& cv_name) const
 {
-  rapidjson::Document doc(wtss_cxx::json_request(wtss_cxx::wtss::server_uri + "/mds/dataset_list?product="
-                                                 + cv_name + "&output_format=json"));
 
- if(!doc.IsObject())
-     throw parse_error() << error_description("Invalid JSON document: expecting a object!");
+  std::string query_string("/describe_coverage?coverage="+ cv_name);
+  rapidjson::Document doc(wtss_cxx::json_request(wtss_cxx::wtss::server_uri + query_string + "&output_format=json"));
 
-  if(!doc.HasMember("datasets"))
-    throw parse_error() << error_description("Invalid JSON document: expecting a member named \"datasets\"!");
-
-  const rapidjson::Value& j_datasets = doc["datasets"];
-
-  if(!j_datasets.IsArray())
-    throw parse_error() << error_description("Invalid JSON document: member named \"datasets\" must be an array!");
+  if(!doc.IsObject())
+    throw parse_error() << error_description("Invalid JSON document: expecting a object!");
 
   wtss_cxx::geoarray_t result;
 
-  result.name = cv_name;
+  if(!doc.HasMember("coverage"))
+    throw parse_error() << error_description("Invalid JSON document: expecting a member named \"coverage\"!");
 
-  for (rapidjson::Value::ConstValueIterator itr = j_datasets.Begin(); itr != j_datasets.End(); ++itr)
+  result.name = doc["coverage"].GetString();
+
+  if(!doc.HasMember("description"))
+    throw parse_error() << error_description("Invalid JSON document: expecting a member named \"description\"!");
+
+  result.description = doc["description"].GetString();
+
+  if(!doc.HasMember("detail"))
+    throw parse_error() << error_description("Invalid JSON document: expecting a member named \"detail\"!");
+
+  result.detail = doc["detail"].GetString();
+
+  if(!doc.HasMember("dimensions"))
+    throw parse_error() << error_description("Invalid JSON document: expecting a member named \"dimensions\"!");
+
+  const rapidjson::Value& j_dimensions = doc["dimensions"];
+
+  if(!doc.HasMember("attributes"))
+    throw parse_error() << error_description("Invalid JSON document: expecting a member named \"attributes\"!");
+
+  const rapidjson::Value& j_attributes = doc["attributes"];
+
+  if(!j_dimensions.IsArray())
+    throw parse_error() << error_description("Invalid JSON document: member named \"dimensions\" must be an array!");
+
+  if(!j_attributes.IsArray())
+    throw parse_error() << error_description("Invalid JSON document: member named \"attributes\" must be an array!");
+
+   for (rapidjson::Value::ConstValueIterator itr = j_dimensions.Begin(); itr != j_dimensions.End(); ++itr)
+   {
+     wtss_cxx::dimension_t dimension;
+
+     dimension.name = (*itr)["name"].GetString();
+     dimension.description = (*itr)["description"].GetString();
+     dimension.max_idx = (*itr)["max_idx"].GetInt64();
+     dimension.min_idx = (*itr)["min_idx"].GetInt64();
+
+     result.dimensions.push_back(dimension);
+   }
+
+  for (rapidjson::Value::ConstValueIterator itr = j_attributes.Begin(); itr != j_attributes.End(); ++itr)
   {
-    rapidjson::Document j_desc(wtss_cxx::json_request(wtss_cxx::wtss::server_uri+"/mds/dataset_metadata?product="
-                                                      +cv_name+"&dataset="+itr->GetString()+"&output_format=json"));
-    if(!j_desc.IsObject())
-      continue;
+    wtss_cxx::attribute_t attribute;
 
-    wtss_cxx::attribute_t attribute_t;
-//    wtss_cxx::dimension_t dimension_t;
+    attribute.name = (*itr)["name"].GetString();
+    attribute.description = (*itr)["description"].GetString();
+    attribute.scale_factor = (*itr)["scale_factor"].GetDouble();
+    attribute.missing_value = (*itr)["missing_value"].GetDouble();
+    attribute.datatype = wtss_cxx::datatype_t::from_string((*itr)["datatype"].GetString());
+    attribute.valid_range.max_val = (*itr)["valid_range"]["max"].GetDouble();
+    attribute.valid_range.min_val = (*itr)["valid_range"]["min"].GetDouble();
 
-    attribute_t.name = itr->GetString();
-    attribute_t.description = j_desc["src_subdataset_info"]["description"].GetString();
-    attribute_t.scale_factor = j_desc["band_metadata"]["scale_factor"].GetDouble();
-    attribute_t.missing_value = j_desc["band_metadata"]["nodata"].GetDouble();
-    attribute_t.datatype = wtss_cxx::datatype_t::from_string(j_desc["band_metadata"]["datatype"].GetString());
-
-//    result.dimensions.push_back(dimension_t);
-    result.attributes.push_back(attribute_t);
+    result.attributes.push_back(attribute);
   }
 
   return result;
@@ -122,44 +151,59 @@ wtss_cxx::wtss::describe_coverage(const std::string& cv_name) const
 wtss_cxx::timeseries_query_result_t
 wtss_cxx::wtss::time_series(const timeseries_query_t& query) const
 {
-  timeseries_query_result_t result;
-  std::string datasets;
-  wtss_cxx::queried_attribute_t queried_attribute_t;
-  for (std::vector<std::string>::const_iterator it = query.attributes.begin(); it != query.attributes.end();++it)
-  {
-      datasets.append(*it );
-    
-      if(query.attributes.end() != it + 1)
-        datasets.append(",");
-  }
-  rapidjson::Document doc(wtss_cxx::json_request(wtss_cxx::wtss::server_uri+"/mds/query?product="
-                                                  +query.coverage_name+"&datasets="+datasets+
-                                                  "&longitude="+boost::lexical_cast<std::string>(query.longitude)+
-                                                  "&latitude="+boost::lexical_cast<std::string>(query.latitude)+
-                                                  "&output_format=json"));
+  timeseries_query_result_t result;  
+  wtss_cxx::queried_attribute_t attribute;
+  std::string query_string("/time_series?coverage="+query.coverage_name+
+                           "&attributes="+boost::algorithm::join(query.attributes, ",")+
+                           "&longitude="+boost::lexical_cast<std::string>(query.longitude)+
+                           "&latitude="+boost::lexical_cast<std::string>(query.latitude));
 
-  const rapidjson::Value& j_doc = doc["result"]["datasets"];
-  const rapidjson::Value& j_timeline = doc["result"]["timeline"];
-  for (rapidjson::Value::ConstValueIterator itr = j_doc.Begin(); itr != j_doc.End(); ++itr)
+  result.coverage.name = query.coverage_name;
+  result.query = query;
+
+  if(!query.start_date.empty())
+     query_string.append("&start="+query.start_date);
+
+  if(!query.end_date.empty())
+     query_string.append("&end="+query.start_date);
+
+  rapidjson::Document doc(wtss_cxx::json_request(wtss_cxx::wtss::server_uri+query_string+"&output_format=json"));
+
+  if(!doc.HasMember("result"))
+    throw parse_error() << error_description("Invalid JSON document: expecting a member named \"result\"!");
+
+  const rapidjson::Value& j_result = doc["result"];
+
+  if(!j_result.HasMember("attributes"))
+    throw parse_error() << error_description("Invalid JSON document: expecting a member named \"attributes\"!");
+
+  const rapidjson::Value& j_attributes = j_result["attributes"];
+
+  for (rapidjson::Value::ConstValueIterator itr = j_attributes.Begin(); itr != j_attributes.End(); ++itr)
   {
-     const rapidjson::Value& j_dataset = (*itr);
-     queried_attribute_t.name = j_dataset["dataset"].GetString();
-     queried_attribute_t.values.clear();
-     if(!j_dataset["values"].IsNull())
-     {
-       if(j_dataset["values"].IsArray())
-         for (rapidjson::Value::ConstValueIterator itr_ = j_dataset["values"].Begin(); itr_ != j_dataset["values"].End(); ++itr_)
-           queried_attribute_t.values.push_back(itr_->GetDouble());
-       else
-         queried_attribute_t.values.push_back(j_dataset["values"].GetDouble());
-     }
-     result.coverage.queried_attributes.push_back(queried_attribute_t);
+     attribute.name = (*itr)["attribute"].GetString();
+     attribute.values.clear();
+     if(!(*itr)["values"].IsNull())
+       if((*itr)["values"].IsArray())
+         for (rapidjson::Value::ConstValueIterator itr_v = (*itr)["values"].Begin(); itr_v != (*itr)["values"].End(); ++itr_v)
+           attribute.values.push_back(itr_v->GetDouble());
+
+     result.coverage.queried_attributes.push_back(attribute);
   }
+
+  if(!j_result.HasMember("timeline"))
+    throw parse_error() << error_description("Invalid JSON document: expecting a member named \"timeline\"!");
+
+  const rapidjson::Value& j_timeline = j_result["timeline"];
+
+  if(!j_timeline.IsArray())
+    throw parse_error() << error_description("Invalid JSON document: member named \"timeline\" must be an array!");
+
   for(rapidjson::Value::ConstValueIterator itr = j_timeline.Begin(); itr != j_timeline.End(); ++itr)
   {
     const rapidjson::Value& j_date = (*itr);
     std::vector<std::string> date_split;
-    std::string timeline = j_date.GetString();
+    std::string timeline = j_date.GetString();//j_date.GetString();
     boost::algorithm::split(date_split,timeline,boost::algorithm::is_any_of("-"));
     date d;
     d.day   = boost::lexical_cast<int>(date_split[2]);
@@ -167,6 +211,6 @@ wtss_cxx::wtss::time_series(const timeseries_query_t& query) const
     d.year  = boost::lexical_cast<int>(date_split[0]);
     result.coverage.timeline.push_back(d);
   }
-  result.query = query;
+
   return result;
 }
