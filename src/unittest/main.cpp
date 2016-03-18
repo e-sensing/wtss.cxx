@@ -34,7 +34,7 @@
 
 int main(int argc, char* argv[])
 {
-  wtss_cxx::wtss chronos("http://www.dpi.inpe.br/mds");
+  wtss_cxx::wtss chronos("http://localhost:7654/wtss");
   
   try
   {
@@ -54,11 +54,12 @@ int main(int argc, char* argv[])
     wtss_cxx::timeseries_query_t q;
     q.coverage_name = coverages.front();
     q.attributes.push_back(cv.attributes.front().name);
-    q.attributes.push_back(cv.attributes.back().name);
     q.longitude = -54.0;
     q.latitude = -12;
   
     wtss_cxx::timeseries_query_result_t result = chronos.time_series(q);
+
+    if(result.coverage.name.empty());
   }
   catch(const boost::exception& e)
   {
