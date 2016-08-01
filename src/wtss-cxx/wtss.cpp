@@ -79,7 +79,7 @@ wtss_cxx::geoarray_t
 wtss_cxx::wtss::describe_coverage(const std::string& cv_name) const
 {
 
-  std::string query_string("/describe_coverage?coverage="+ cv_name);
+  std::string query_string("/describe_coverage?name="+ cv_name);
   rapidjson::Document doc(wtss_cxx::json_request(wtss_cxx::wtss::server_uri + query_string + "&output_format=json"));
 
   if(!doc.IsObject())
@@ -87,10 +87,10 @@ wtss_cxx::wtss::describe_coverage(const std::string& cv_name) const
 
   wtss_cxx::geoarray_t result;
 
-  if(!doc.HasMember("coverage"))
+  if(!doc.HasMember("name"))
     throw parse_error() << error_description("Invalid JSON document: expecting a member named \"coverage\"!");
 
-  result.name = doc["coverage"].GetString();
+  result.name = doc["name"].GetString();
 
   if(!doc.HasMember("description"))
     throw parse_error() << error_description("Invalid JSON document: expecting a member named \"description\"!");
@@ -145,13 +145,35 @@ wtss_cxx::wtss::describe_coverage(const std::string& cv_name) const
     result.attributes.push_back(attribute);
   }
 
+  const rapidjson::Value& j_geo_extent = doc["geo_extent"];
+
+  wtss_cxx::spatial_extent_t spatial_extent;
+
+  spatial_extent.extent.xmin = j_geo_extent["spatial"]["extent"]["xmin"].GetDouble();
+  spatial_extent.extent.xmax = j_geo_extent["spatial"]["extent"]["xmax"].GetDouble();
+  spatial_extent.extent.ymin = j_geo_extent["spatial"]["extent"]["ymin"].GetDouble();
+  spatial_extent.extent.ymax = j_geo_extent["spatial"]["extent"]["ymax"].GetDouble();
+  spatial_extent.resolution.x = j_geo_extent["spatial"]["resolution"]["x"].GetDouble();
+  spatial_extent.resolution.y = j_geo_extent["spatial"]["resolution"]["y"].GetDouble();
+
+  result.geo_extent.spatial = spatial_extent;
+
+  wtss_cxx::temporal_extent_t temporal_extent;
+
+  temporal_extent.resolution = j_geo_extent["temporal"]["resolution"].GetInt64();
+  temporal_extent.time_interval.start = j_geo_extent["temporal"]["start"].GetString();
+  temporal_extent.time_interval.end = j_geo_extent["temporal"]["end"].GetString();
+  temporal_extent.unit = wtss_cxx::unit_t::from_string(j_geo_extent["temporal"]["unit"].GetString());
+
+  result.geo_extent.temporal = temporal_extent;
+
   return result;
 }
 
 wtss_cxx::timeseries_query_result_t
 wtss_cxx::wtss::time_series(const timeseries_query_t& query) const
 {
-  timeseries_query_result_t result;  
+  timeseries_query_result_t result;
   wtss_cxx::queried_attribute_t attribute;
   std::string query_string("/time_series?coverage="+query.coverage_name+
                            "&attributes="+boost::algorithm::join(query.attributes, ",")+

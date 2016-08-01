@@ -34,29 +34,29 @@
 
 int main(int argc, char* argv[])
 {
-  wtss_cxx::wtss chronos("http://localhost:7654/wtss");
-  
+  wtss_cxx::wtss chronos("http://www.dpi.inpe.br/ts/wtss");
+
   try
   {
 // listing the available coverages
     std::vector<std::string> coverages = chronos.list_coverages();
-  
+
     if(coverages.empty())
       return EXIT_SUCCESS;
-  
+
 // describing first coverage
     wtss_cxx::geoarray_t cv = chronos.describe_coverage(coverages.front());
-  
+
     if(cv.attributes.empty())
       return EXIT_SUCCESS;
-  
+
 // retrieving timeseries for first coverage and its first attribute
     wtss_cxx::timeseries_query_t q;
     q.coverage_name = coverages.front();
     q.attributes.push_back(cv.attributes.front().name);
     q.longitude = -54.0;
     q.latitude = -12;
-  
+
     wtss_cxx::timeseries_query_result_t result = chronos.time_series(q);
 
     if(result.coverage.name.empty());
@@ -67,21 +67,21 @@ int main(int argc, char* argv[])
       std::cout << "\n\nthe following error has occurried: " << *d << std::endl;
     else
       std::cout << "\n\nan unknown error has occurried" << std::endl;
-    
+
     return EXIT_FAILURE;
   }
   catch(const std::exception& e)
   {
     std::cout << "\n\nthe following error has occurried: " << e.what() << std::endl;
-    
+
     return EXIT_FAILURE;
   }
   catch(...)
   {
     std::cout << "\n\nan unknown error has occurried." << std::endl;
-    
+
     return EXIT_FAILURE;
   }
-  
+
   return EXIT_SUCCESS;
 }
