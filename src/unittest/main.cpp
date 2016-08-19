@@ -42,13 +42,20 @@ int main(int argc, char* argv[])
     std::vector<std::string> coverages = chronos.list_coverages();
 
     if(coverages.empty())
+    {
+      std::cout << "The time series service returned an empty coverage list!" << std::endl;
       return EXIT_SUCCESS;
+    }
 
 // describing first coverage
     wtss_cxx::geoarray_t cv = chronos.describe_coverage(coverages.front());
 
     if(cv.attributes.empty())
-      return EXIT_SUCCESS;
+    {
+      std::cerr << "The service didn't retur attribute description for coverage: "
+                << coverages.front() << "." << std::endl;
+      return EXIT_FAILURE;
+    }
 
 // retrieving timeseries for first coverage and its first attribute
     wtss_cxx::timeseries_query_t q;
@@ -59,7 +66,12 @@ int main(int argc, char* argv[])
 
     wtss_cxx::timeseries_query_result_t result = chronos.time_series(q);
 
-    if(result.coverage.name.empty());
+    if(result.coverage.name.empty())
+    {
+      std::cerr << "Error retrieving time series for coverage: "
+                << coverages.front() << std::endl;
+      return EXIT_FAILURE;
+    }
   }
   catch(const boost::exception& e)
   {
