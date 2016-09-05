@@ -13,7 +13,8 @@
   GNU Lesser General Public License for more details.
 
   You should have received a copy of the GNU Lesser General Public License along
-  with WTSS.CXX. See COPYING. If not, see <http://www.gnu.org/licenses/lgpl-3.0.html>.
+  with WTSS.CXX. See COPYING. If not, see
+  <http://www.gnu.org/licenses/lgpl-3.0.html>.
  */
 
 /*!
@@ -23,23 +24,22 @@
   \author Matheus Cavassan Zaglia
  */
 
-
-//STL
+// STL
 
 #include <string>
 
-//RapidJSON
+// RapidJSON
 #include <rapidjson/document.h>
-
 
 #ifndef __WTSS_CXX_UTILS_HPP__
 #define __WTSS_CXX_UTILS_HPP__
 
-namespace wtss_cxx
+namespace wtss
 {
-
+  namespace cxx
+  {
     rapidjson::Document json_request(const std::string& server_uri);
+  } // end namespace cxx
+}   // end namespace wtss
 
-}
-
-#endif // __WTSS_CXX_UTILS_HPP__
+#endif  // __WTSS_CXX_UTILS_HPP__

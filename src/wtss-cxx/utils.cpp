@@ -13,7 +13,8 @@
   GNU Lesser General Public License for more details.
 
   You should have received a copy of the GNU Lesser General Public License along
-  with WTSS.CXX. See COPYING. If not, see <http://www.gnu.org/licenses/lgpl-3.0.html>.
+  with WTSS.CXX. See COPYING. If not, see
+  <http://www.gnu.org/licenses/lgpl-3.0.html>.
  */
 
 /*!
@@ -28,93 +29,106 @@
 #include "utils.hpp"
 #include "exception.hpp"
 
-//cpp-netlib
-#include <boost/network/protocol/http/client.hpp>
+// CURL
+#include <curl/curl.h>
+
+// STL
+#include <memory>
 
 // Boost
 #include <boost/format.hpp>
 
-struct http
+size_t write_response_callback(void *ptr, size_t size, size_t nmemb, void *data)
 {
-  enum status_type
-  {
-    continue_http = 100,
-    switching_protocols = 101,
-    ok = 200,
-    no_content = 204,
-    bad_request = 400,
-    unauthorized = 401,
-    forbidden = 403,
-    not_found = 404,
-    method_not_allowed = 405,
-    not_acceptable = 406,
-    request_timeout = 408,
-    internal_server_error = 500,
-    not_implemented = 501,
-    bad_gateway = 502,
-    service_unavailable = 503,
-    gateway_timeout = 504,
-    http_version_not_supported = 505
-  };
-  
-  struct headers
-  {
-    static const std::string content_type;
-  };
-  
-  struct mime_type
-  {
-    static const std::string application_json;
-  };
-  
-};
+  ((std::string *)data)->append((char *)ptr, size * nmemb);
+  return size * nmemb;
+}
 
-const std::string http::headers::content_type("Content-Type");
-const std::string http::mime_type::application_json("application/json");
-
-rapidjson::Document
-wtss_cxx::json_request(const std::string& server_uri)
+rapidjson::Document wtss::cxx::json_request(const std::string &server_uri)
 {
-  boost::network::http::client client;
-  boost::network::http::client::request request(server_uri);
-  boost::network::http::client::response response = client.get(request);
-  
-// check response status
-  uint16_t status = response.status();
-  
-  if(status != http::ok)
-  {
-    boost::format err_msg("WTSS server response error.\nHTTP Status: '%1%'\n%2%");
-    throw http_response_error() << error_description((err_msg % status % response.status_message()).str());
-  }
-  
-// check headers for a content-type of type 'application/json'
-  const boost::network::http::client::response::headers_container_type& headers = response.headers();
-  
-  boost::network::http::client::response::headers_container_type::const_iterator it = headers.find(http::headers::content_type);
-  
-  if(it == headers.end())
-    throw http_response_error() << error_description("WTSS server response error: missing content type.");
-  
-  if(it->second != http::mime_type::application_json)
-  {
-    boost::format err_msg("WTSS server response error.\nExpected a 'application/json' content-type.\nReceived: %1%");
-    throw http_response_error() << error_description((err_msg % it->second).str());
-  }
-  
-// get response body
-  std::string json = body(response);
+  CURL *curl;
+  CURLcode res;
+  struct curl_slist *header = NULL;
 
-// valid JSON document
+  header = curl_slist_append(header, "Accept: application/json");
+  header = curl_slist_append(header, "Content-Type: application/json");
+
+  curl = curl_easy_init();
+  char err_buffer[CURL_ERROR_SIZE];
+  std::string response;
+
+  if (curl)
+  {
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header);
+    curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, &err_buffer);
+    curl_easy_setopt(curl, CURLOPT_URL, server_uri.c_str());
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_response_callback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+    res = curl_easy_perform(curl);
+
+    if (res != CURLE_OK)
+    {
+      boost::format err_msg(
+          "WTSS server response error.\n"
+          "The following error has ocurred: %1%.");
+      curl_slist_free_all(header);
+      curl_easy_cleanup(curl);
+      throw http_response_error()
+          << error_description((err_msg % err_buffer).str());
+    }
+
+    char *content_type;
+    curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE, &content_type);
+
+    if (std::string(content_type).find("application/json") == std::string::npos)
+    {
+      std::string content_type_str = std::string(content_type);
+
+      boost::format err_msg(
+          "WTSS server response error.\n"
+          "Expected an 'application/json' Content-Type.\n"
+          "Received: %1%");
+
+      curl_slist_free_all(header);
+      curl_easy_cleanup(curl);
+
+      throw http_response_error()
+          << error_description((err_msg % content_type_str).str());
+    }
+
+    int response_code = 0;
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
+
+    if (response_code != 200)
+    {
+      std::string response_code_str = std::to_string(response_code);
+
+      boost::format err_msg(
+          "WTSS server response error.\n Expected response code 200.\n "
+          "Received: " +
+          response_code);
+
+      curl_slist_free_all(header);
+      curl_easy_cleanup(curl);
+
+      throw http_response_error()
+          << error_description((err_msg % response_code_str).str());
+    }
+
+    curl_slist_free_all(header);
+    curl_easy_cleanup(curl);
+  }
+
   rapidjson::Document doc;
 
-  doc.Parse<0>(json.c_str());
+  doc.Parse<0>(response.c_str());
 
-  if(doc.HasParseError())
+  if (doc.HasParseError())
   {
-    boost::format err_msg("error parsing requested document '%1%': %2%.");
+    boost::format err_msg("Error parsing requested document '%1%': %2%.");
 
-    throw parse_error() << error_description((err_msg % server_uri % doc.GetParseError()).str());
+    throw parse_error() << error_description(
+        (err_msg % server_uri % doc.GetParseError()).str());
   }
 
   return doc;

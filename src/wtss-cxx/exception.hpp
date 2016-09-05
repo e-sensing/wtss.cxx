@@ -13,7 +13,8 @@
   GNU Lesser General Public License for more details.
 
   You should have received a copy of the GNU Lesser General Public License along
-  with WTSS.CXX. See COPYING. If not, see <http://www.gnu.org/licenses/lgpl-3.0.html>.
+  with WTSS.CXX. See COPYING. If not, see
+  <http://www.gnu.org/licenses/lgpl-3.0.html>.
  */
 
 /*!
@@ -35,27 +36,29 @@
 #include <boost/exception/all.hpp>
 
 //! WTSS.CXX.
-namespace wtss_cxx
+namespace wtss
 {
+  namespace cxx
+  {
+    //! Base exception class for WTSS.CXX.
+    struct exception : virtual std::exception, virtual boost::exception{};
 
-  //! Base exception class for WTSS.CXX.
-  struct exception: virtual std::exception, virtual boost::exception { };
+    //! Exception type for missing parameter value in service request.
+    struct missing_argument_error : virtual exception{};
 
-  //! Exception type for missing parameter value in service request.
-  struct missing_argument_error: virtual exception { };
+    //! Exception type for invalid parameter value in service request.
+    struct invalid_argument_error : virtual exception{};
 
-  //! Exception type for invalid parameter value in service request.
-  struct invalid_argument_error: virtual exception { };
+    //! Exception type when parsing a document (JSON, XML or any other format).
+    struct parse_error : virtual exception{};
 
-  //! Exception type when parsing a document (JSON, XML or any other format).
-  struct parse_error: virtual exception { };
+    //! Exception type for an http server response error.
+    struct http_response_error : virtual exception{};
 
-  //! Exception type for an http server response error.
-  struct http_response_error: virtual exception { };
+    //! The base type for error report messages.
+    typedef boost::error_info<struct tag_error_description, std::string>
+        error_description;
+  }  // end namespace cxx
+}  // end namespace wtss
 
-  //! The base type for error report messages.
-  typedef boost::error_info<struct tag_error_description, std::string> error_description;
-
-}   // end namespace wtss
-
-#endif // __WTSS_CXX_EXCEPTION_HPP__
+#endif  // __WTSS_CXX_EXCEPTION_HPP__
