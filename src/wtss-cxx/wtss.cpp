@@ -195,7 +195,7 @@ wtss::cxx::timeseries_query_result_t wtss::cxx::client::time_series(
     const timeseries_query_t& query) const
 {
   timeseries_query_result_t result;
-  wtss::cxx::queried_attribute_t attribute;
+  queried_attribute_t attribute;
   std::string attributes;
   attributes =
       accumulate(query.attributes.begin(), query.attributes.end(), attributes,
@@ -203,10 +203,16 @@ wtss::cxx::timeseries_query_result_t wtss::cxx::client::time_series(
                    return a.empty() ? b : a + "," + b;
                  });
 
+  std::ostringstream strs;
+  strs << query.latitude;
+  std::string latitude = strs.str();
+  strs.str("");
+  strs << query.longitude;
+  std::string longitude = strs.str();
+
   std::string query_string = "/time_series?coverage=" + query.coverage_name +
                              "&attributes=" + attributes + "&longitude=" +
-                             std::to_string(query.longitude) + "&latitude=" +
-                             std::to_string(query.latitude);
+                             longitude + "&latitude=" +latitude;
 
   result.coverage.name = query.coverage_name;
   result.query = query;
