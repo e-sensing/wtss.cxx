@@ -50,7 +50,7 @@ wtss::cxx::client::~client() {}
 std::vector<std::string> wtss::cxx::client::list_coverages() const
 {
   rapidjson::Document doc(wtss::cxx::json_request(
-      wtss::cxx::client::server_uri + "/list_coverages?output_format=json"));
+      wtss::cxx::client::server_uri + "/list_coverages"));
 
   if (!doc.IsObject())
     throw parse_error() << error_description(
@@ -80,7 +80,7 @@ wtss::cxx::geoarray_t wtss::cxx::client::describe_coverage(
 {
   std::string query_string("/describe_coverage?name=" + cv_name);
   rapidjson::Document doc(wtss::cxx::json_request(
-      wtss::cxx::client::server_uri + query_string + "&output_format=json"));
+      wtss::cxx::client::server_uri + query_string));
 
   if (!doc.IsObject())
     throw parse_error() << error_description(
@@ -223,7 +223,7 @@ wtss::cxx::timeseries_query_result_t wtss::cxx::client::time_series(
   if (!query.end_date.empty()) query_string.append("&end=" + query.start_date);
 
   rapidjson::Document doc(wtss::cxx::json_request(
-      wtss::cxx::client::server_uri + query_string + "&output_format=json"));
+      wtss::cxx::client::server_uri + query_string));
 
   if (!doc.HasMember("result"))
     throw parse_error() << error_description(
@@ -279,9 +279,11 @@ wtss::cxx::timeseries_query_result_t wtss::cxx::client::time_series(
     }
     date_split.push_back(timeline);
     date d;
-    d.day = std::stoi(date_split[2]);
-    d.month = std::stoi(date_split[1]);
-    d.year = std::stoi(date_split[0]);
+
+    if(date_split.size() > 0) d.year = std::stoi(date_split[0]);
+    if(date_split.size() > 1) d.month = std::stoi(date_split[1]);
+    if(date_split.size() > 2) d.day = std::stoi(date_split[2]);
+
     result.coverage.timeline.push_back(d);
   }
 
