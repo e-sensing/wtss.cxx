@@ -33,11 +33,15 @@
 #include "exception.hpp"
 #include "utils.hpp"
 
+// Boost
+#include <boost/format.hpp>
+
 // RapidJSON
 #include <rapidjson/document.h>
 #include <rapidjson/filestream.h>
 
 // STL
+#include <numeric>
 #include <sstream>
 #include <string>
 
@@ -49,8 +53,18 @@ wtss::cxx::client::client(const std::string& server_uri)
 wtss::cxx::client::~client() {}
 std::vector<std::string> wtss::cxx::client::list_coverages() const
 {
-  rapidjson::Document doc(wtss::cxx::json_request(
-      wtss::cxx::client::server_uri + "/list_coverages"));
+
+  rapidjson::Document doc;
+  doc.Parse<0>(wtss::cxx::request(
+    wtss::cxx::client::server_uri + "/list_coverages").c_str());
+
+  if (doc.HasParseError())
+  {
+    boost::format err_msg("Error parsing requested document '%1%/list_coverages: %2%.");
+
+    throw parse_error() << error_description(
+      (err_msg % server_uri %doc.GetParseError()).str());
+  }
 
   if (!doc.IsObject())
     throw parse_error() << error_description(
@@ -78,9 +92,20 @@ std::vector<std::string> wtss::cxx::client::list_coverages() const
 wtss::cxx::geoarray_t wtss::cxx::client::describe_coverage(
     const std::string& cv_name) const
 {
+
+
   std::string query_string("/describe_coverage?name=" + cv_name);
-  rapidjson::Document doc(wtss::cxx::json_request(
-      wtss::cxx::client::server_uri + query_string));
+  rapidjson::Document doc;
+  doc.Parse<0>(wtss::cxx::request(
+    wtss::cxx::client::server_uri + query_string).c_str());
+
+  if (doc.HasParseError())
+  {
+    boost::format err_msg("Error parsing requested document '%1%%2%': %3%.");
+
+    throw parse_error() << error_description(
+      (err_msg % server_uri % query_string %doc.GetParseError()).str());
+  }
 
   if (!doc.IsObject())
     throw parse_error() << error_description(
@@ -198,7 +223,7 @@ wtss::cxx::timeseries_query_result_t wtss::cxx::client::time_series(
   queried_attribute_t attribute;
   std::string attributes;
   attributes =
-      accumulate(query.attributes.begin(), query.attributes.end(), attributes,
+      std::accumulate(query.attributes.begin(), query.attributes.end(), attributes,
                  [](const std::string& a, const std::string& b) -> std::string {
                    return a.empty() ? b : a + "," + b;
                  });
@@ -222,12 +247,22 @@ wtss::cxx::timeseries_query_result_t wtss::cxx::client::time_series(
 
   if (!query.end_date.empty()) query_string.append("&end=" + query.start_date);
 
-  rapidjson::Document doc(wtss::cxx::json_request(
-      wtss::cxx::client::server_uri + query_string));
+  rapidjson::Document doc;
+  doc.Parse<0>(wtss::cxx::request(
+      wtss::cxx::client::server_uri + query_string).c_str());
+
+  if (doc.HasParseError())
+  {
+    boost::format err_msg("Error parsing requested document '%1%%2%': %3%.");
+
+    throw parse_error() << error_description(
+      (err_msg % server_uri % query_string %doc.GetParseError()).str());
+  }
 
   if (!doc.HasMember("result"))
     throw parse_error() << error_description(
         "Invalid JSON document: expecting a member named \"result\"!");
+  
 
   const rapidjson::Value& j_result = doc["result"];
 

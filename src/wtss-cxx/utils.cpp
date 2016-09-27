@@ -32,9 +32,6 @@
 // CURL
 #include <curl/curl.h>
 
-// STL
-#include <memory>
-
 // Boost
 #include <boost/format.hpp>
 
@@ -44,7 +41,7 @@ size_t write_response_callback(void *ptr, size_t size, size_t nmemb, void *data)
   return size * nmemb;
 }
 
-rapidjson::Document wtss::cxx::json_request(const std::string &server_uri)
+std::string wtss::cxx::request(const std::string &server_uri)
 {
   CURL *curl;
   CURLcode res;
@@ -119,17 +116,5 @@ rapidjson::Document wtss::cxx::json_request(const std::string &server_uri)
     curl_easy_cleanup(curl);
   }
 
-  rapidjson::Document doc;
-
-  doc.Parse<0>(response.c_str());
-
-  if (doc.HasParseError())
-  {
-    boost::format err_msg("Error parsing requested document '%1%': %2%.");
-
-    throw parse_error() << error_description(
-        (err_msg % server_uri % doc.GetParseError()).str());
-  }
-
-  return doc;
+  return response.c_str();
 }

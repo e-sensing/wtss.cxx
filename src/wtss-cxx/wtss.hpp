@@ -37,7 +37,7 @@ namespace wtss
 {
   namespace cxx
   {
-    class client
+    class WTSSCXXEXPORT client
     {
      public:
       client(const std::string& server_uri);

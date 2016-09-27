@@ -129,7 +129,7 @@ include_directories(${CMAKE_BINARY_DIR})
 #
 
 # log timer
-find_package(Boost 1.54.0 REQUIRED system filesystem date_time chrono thread program_options regex)
+find_package(Boost 1.54.0 REQUIRED)
 if(NOT Boost_FOUND)
   message(FATAL_ERROR "WTSS_CXX: could not find required Boost libraries!")
 endif()

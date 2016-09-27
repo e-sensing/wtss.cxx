@@ -30,4 +30,12 @@
 // WTSS.CXX
 #include "wtss_cxx_config.hpp"
 
+#ifdef WIN32
+  #define WTSSCXXEXPORT __declspec(dllexport)
+  #define WTSSCXXIMPORT __declspec(dllimport)
+#else
+  #define WTSSCXXEXPORT
+  #define WTSSCXXIMPORT
+#endif
+
 #endif  // __WTSS_CXX_CONFIG_HPP__

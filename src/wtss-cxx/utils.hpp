@@ -25,11 +25,7 @@
  */
 
 // STL
-
 #include <string>
-
-// RapidJSON
-#include <rapidjson/document.h>
 
 #ifndef __WTSS_CXX_UTILS_HPP__
 #define __WTSS_CXX_UTILS_HPP__
@@ -38,7 +34,7 @@ namespace wtss
 {
   namespace cxx
   {
-    rapidjson::Document json_request(const std::string& server_uri);
+    std::string request(const std::string& server_uri);
   } // end namespace cxx
 }   // end namespace wtss
 
