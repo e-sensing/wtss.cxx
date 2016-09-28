@@ -87,6 +87,7 @@ std::string wtss::cxx::request(const std::string &server_uri)
           "Received: %1%");
 
       curl_slist_free_all(header);
+      
       curl_easy_cleanup(curl);
 
       throw http_response_error()
@@ -94,6 +95,7 @@ std::string wtss::cxx::request(const std::string &server_uri)
     }
 
     int response_code = 0;
+    
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
 
     if (response_code != 200)
@@ -101,9 +103,8 @@ std::string wtss::cxx::request(const std::string &server_uri)
       std::string response_code_str = std::to_string(response_code);
 
       boost::format err_msg(
-          "WTSS server response error.\n Expected response code 200.\n "
-          "Received: " +
-          response_code);
+          "WTSS server response error.\n Expected response code 200.\n"
+          "Received: '%1%'.");
 
       curl_slist_free_all(header);
       curl_easy_cleanup(curl);

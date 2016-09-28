@@ -42,7 +42,7 @@ set(WTSS_CXX_VERSION_STRING "${WTSS_CXX_VERSION_MAJOR}.${WTSS_CXX_VERSION_MINOR}
 set(WTSS_CXX_VERSION "0x000100")
 
 # variables storing absolute paths
-set(WTSS_CXX_ABSOLUTE_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../..)
+get_filename_component(WTSS_CXX_ABSOLUTE_ROOT_DIR "../../" ABSOLUTE)
 
 # variables that control paths
 set(WTSS_CXX_BASE_DESTINATION_DIR "")
@@ -75,6 +75,7 @@ endif()
 
 # Common definitions to all modules
 add_definitions(-DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_VERSION=3 -DBOOST_UBLAS_TYPE_CHECK=0)
+add_definitions(-DWTSSCXXDLL)
 
 # Specific definitions per platform
 #if(APPLE)
