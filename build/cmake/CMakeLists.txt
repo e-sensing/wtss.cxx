@@ -129,15 +129,12 @@ include_directories(${CMAKE_BINARY_DIR})
 #
 
 # log timer
-find_package(Boost 1.54.0 REQUIRED system filesystem date_time chrono thread program_options regex)
+find_package(Boost 1.54.0 REQUIRED)
 if(NOT Boost_FOUND)
   message(FATAL_ERROR "WTSS_CXX: could not find required Boost libraries!")
 endif()
 
-find_package(cppnetlib REQUIRED)
-if(NOT Boost_FOUND)
-  message(FATAL_ERROR "WTSS_CXX: could not find required CppNetLib libraries!")
-endif()
+find_package(CURL REQUIRED)
 
 find_package(RapidJSON REQUIRED)
 if(NOT Boost_FOUND)
@@ -153,7 +150,7 @@ endif()
 # add include targets
 #
 include_directories(${Boost_INCLUDE_DIR})
-include_directories(${CPPNETLIB_INCLUDE_DIRS})
+include_directories(${CURL_INCLUDE_DIRS})
 include_directories(${RAPIDJSON_INCLUDE_DIR})
 
 
@@ -167,8 +164,7 @@ file(GLOB WTSS_CXX_HDR_FILES ${WTSS_CXX_ABSOLUTE_ROOT_DIR}/src/wtss-cxx/*.hpp)
 
 add_library(wtss_cxx_client SHARED ${WTSS_CXX_SRC_FILES} ${WTSS_CXX_HDR_FILES})
 
-target_link_libraries(wtss_cxx_client cppnetlib-uri
-                                      cppnetlib-client-connections)
+target_link_libraries(wtss_cxx_client ${CURL_LIBRARIES})
 #${Boost_THREAD_LIBRARY}
 #${Boost_DATE_TIME_LIBRARY}
 #${Boost_REGEX_LIBRARY}

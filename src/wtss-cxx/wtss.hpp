@@ -13,7 +13,8 @@
   GNU Lesser General Public License for more details.
 
   You should have received a copy of the GNU Lesser General Public License along
-  with WTSS.CXX. See COPYING. If not, see <http://www.gnu.org/licenses/lgpl-3.0.html>.
+  with WTSS.CXX. See COPYING. If not, see
+  <http://www.gnu.org/licenses/lgpl-3.0.html>.
  */
 
 /*!
@@ -32,27 +33,28 @@
 #include "config.hpp"
 #include "data_types.hpp"
 
-namespace wtss_cxx
+namespace wtss
 {
-  class wtss
+  namespace cxx
   {
-    public:
+    class WTSSCXXEXPORT client
+    {
+     public:
+      client(const std::string& server_uri);
 
-      wtss(const std::string& server_uri);
-
-      ~wtss();
+      ~client();
 
       std::vector<std::string> list_coverages() const;
 
       geoarray_t describe_coverage(const std::string& cv_name) const;
 
-      timeseries_query_result_t time_series(const timeseries_query_t& query) const;
+      timeseries_query_result_t time_series(
+          const timeseries_query_t& query) const;
 
-    protected:
-
+     protected:
       std::string server_uri;
-  };
+    };
+  }  // end namespace cxx
+}  // end namespace wtss
 
-}  // end namespace wtss_cxx
-
-#endif // __WTSS_CXX_WTSS_HPP__
+#endif  // __WTSS_CXX_WTSS_HPP__

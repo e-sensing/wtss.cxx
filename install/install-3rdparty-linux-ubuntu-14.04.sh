@@ -116,37 +116,31 @@ fi
 
 
 #
-# cpp-netLib
+# CURL version 7.42.1
+# Site: http://curl.haxx.se/libcurl/
 #
-if [ ! -f "$WTSS_CXX_DIR/include/boost/mime.hpp" ]; then
-  echo "installing cpp-netlib..."
-  echo ""
+if [ ! -f "$WTSS_CXX_DIR/lib/libcurl.so" ]; then
+  echo "installing CURL..."
   sleep 1s
 
-  tar xzvf cpp-netlib-0.11.2-final.tar.gz
-  valid $? "Error: could not uncompress cpp-netlib-0.11.2-final.tar.gz!"
+  tar xzvf curl-7.42.1.tar.gz
+  valid $? "Error: could not uncompress curl-7.42.1.tar.gz!"
 
-  cd cpp-netlib-0.11.2-final
-  valid $? "Error: could not enter cpp-netlib-0.11.2-final!"
+  cd curl-7.42.1
+  valid $? "Error: could not enter curl-7.42.1!"
 
-  mkdir build-cppnetlib
-
-  cd build-cppnetlib
-  valid $? "Error: could not enter build-cppnetlib!"
-
-  #cmake ../ -DCMAKE_BUILD_TYPE:STRING="Release" -DCMAKE_PREFIX_PATH:PATH="$WTSS_CXX_DIR" -DCMAKE_INSTALL_PREFIX:PATH="$WTSS_CXX_DIR" -DCPP-NETLIB_BUILD_SHARED_LIBS:BOOL="ON" -DCPP-NETLIB_BUILD_TESTS:BOOL="OFF" -DCPP-NETLIB_BUILD_EXPERIMENTS:BOOL="OFF" -DCPP-NETLIB_BUILD_EXAMPLES:BOOL="OFF" -DCPP-NETLIB_ENABLE_HTTPS:BOOL="OFF" -DCMAKE_INSTALL_RPATH:PATH="$WTSS_CXX_DIR/lib" -DCMAKE_SKIP_BUILD_RPATH:BOOL="OFF" -DCMAKE_BUILD_WITH_INSTALL_RPATH:BOOL="OFF" -DCMAKE_INSTALL_RPATH_USE_LINK_PATH:BOOL="OFF"
-
-   cmake ../  -DCMAKE_BUILD_TYPE:STRING="Release" -DCMAKE_PREFIX_PATH:PATH="$WTSS_CXX_DIR" -DCMAKE_CXX_FLAGS="-std=c++11" -DCMAKE_INSTALL_PREFIX:PATH="$WTSS_CXX_DIR" -DCPP-NETLIB_BUILD_SHARED_LIBS:BOOL="ON" -DCPP-NETLIB_BUILD_TESTS:BOOL="OFF" -DCPP-NETLIB_BUILD_EXPERIMENTS:BOOL="OFF" -DCPP-NETLIB_BUILD_EXAMPLES:BOOL="OFF" -DCPP-NETLIB_ENABLE_HTTPS:BOOL="OFF"
-  valid $? "Error: CMake failed for cpp-netlib!"
+  ./configure --prefix=$WTSS_CXX_DIR
+  valid $? "Error: could not configure CURL!"
 
   make -j 4
-  valid $? "Error: Build failed for cpp-netlib!"
+  valid $? "Error: could not make CURL!"
 
   make install
-  valid $? "Error: Installation failed for cpp-netlib!" 
+  valid $? "Error: Could not install CURL!"
 
-  cd ../..  
+  cd ..
 fi
+
 
 
 #

@@ -13,7 +13,8 @@
   GNU Lesser General Public License for more details.
 
   You should have received a copy of the GNU Lesser General Public License along
-  with WTSS.CXX. See COPYING. If not, see <http://www.gnu.org/licenses/lgpl-3.0.html>.
+  with WTSS.CXX. See COPYING. If not, see
+  <http://www.gnu.org/licenses/lgpl-3.0.html>.
  */
 
 /*!
@@ -25,8 +26,8 @@
  */
 
 // WTSS.CXX
-#include <wtss-cxx/wtss.hpp>
 #include <wtss-cxx/exception.hpp>
+#include <wtss-cxx/wtss.hpp>
 
 // STL
 #include <cstdlib>
@@ -34,61 +35,65 @@
 
 int main(int argc, char* argv[])
 {
-  wtss_cxx::wtss chronos("http://www.dpi.inpe.br/ts/wtss");
+  wtss::cxx::client chronos("http://www.dpi.inpe.br/ts/wtss");
 
   try
   {
-// listing the available coverages
+    // listing the available coverages
     std::vector<std::string> coverages = chronos.list_coverages();
 
-    if(coverages.empty())
+    if (coverages.empty())
     {
-      std::cout << "The time series service returned an empty coverage list!" << std::endl;
+      std::cout << "The time series service returned an empty coverage list!"
+                << std::endl;
       return EXIT_SUCCESS;
     }
 
-// describing first coverage
-    wtss_cxx::geoarray_t cv = chronos.describe_coverage(coverages.front());
+    // describing first coverage
+    wtss::cxx::geoarray_t cv = chronos.describe_coverage(coverages.front());
 
-    if(cv.attributes.empty())
+    if (cv.attributes.empty())
     {
-      std::cerr << "The service didn't retur attribute description for coverage: "
-                << coverages.front() << "." << std::endl;
+      std::cerr
+          << "The service didn't retur attribute description for coverage: "
+          << coverages.front() << "." << std::endl;
       return EXIT_FAILURE;
     }
 
-// retrieving timeseries for first coverage and its first attribute
-    wtss_cxx::timeseries_query_t q;
+    // retrieving timeseries for first coverage and its first attribute
+    wtss::cxx::timeseries_query_t q;
     q.coverage_name = coverages.front();
     q.attributes.push_back(cv.attributes.front().name);
     q.longitude = -54.0;
     q.latitude = -12;
 
-    wtss_cxx::timeseries_query_result_t result = chronos.time_series(q);
+    wtss::cxx::timeseries_query_result_t result = chronos.time_series(q);
 
-    if(result.coverage.name.empty())
+    if (result.coverage.name.empty())
     {
       std::cerr << "Error retrieving time series for coverage: "
                 << coverages.front() << std::endl;
       return EXIT_FAILURE;
     }
   }
-  catch(const boost::exception& e)
+  catch (const boost::exception& e)
   {
-    if(const std::string* d = boost::get_error_info<wtss_cxx::error_description>(e))
+    if (const std::string* d =
+            boost::get_error_info<wtss::cxx::error_description>(e))
       std::cout << "\n\nthe following error has occurried: " << *d << std::endl;
     else
       std::cout << "\n\nan unknown error has occurried" << std::endl;
 
     return EXIT_FAILURE;
   }
-  catch(const std::exception& e)
+  catch (const std::exception& e)
   {
-    std::cout << "\n\nthe following error has occurried: " << e.what() << std::endl;
+    std::cout << "\n\nthe following error has occurried: " << e.what()
+              << std::endl;
 
     return EXIT_FAILURE;
   }
-  catch(...)
+  catch (...)
   {
     std::cout << "\n\nan unknown error has occurried." << std::endl;
 
