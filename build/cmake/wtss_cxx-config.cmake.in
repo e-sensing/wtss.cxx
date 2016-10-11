@@ -1,5 +1,5 @@
 include("@wtss_cxx_BINARY_DIR@/wtss_cxx-exports.cmake")
 
 
-set(WTSS_CXX_INCLUDE_DIR "@WTSS_CXX_ABSOLUTE_ROOT_DIR@/src")
+set(wtss_cxx_INCLUDE_DIR "@WTSS_CXX_ABSOLUTE_ROOT_DIR@/src")
 
