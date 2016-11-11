@@ -3,4 +3,4 @@ get_filename_component(_prefix "${_dir}/../../../" ABSOLUTE)
 
 include("${_prefix}/lib/cmake/wtss_cxx-@WTSS_CXX_VERSION_STRING@/wtss_cxx-exports.cmake")
 
-set(WTSS_CXX_INCLUDE_DIR "${_prefix}/include")
+set(wtss_cxx_INCLUDE_DIR "${_prefix}/include")
