@@ -124,7 +124,6 @@ enable_testing()
 # Build tree directory will be needed in all projects.
 include_directories(${CMAKE_BINARY_DIR})
 
-
 #
 # first check of libraries
 #
@@ -137,7 +136,7 @@ endif()
 
 find_package(CURL REQUIRED)
 
-find_package(RapidJSON REQUIRED)
+#find_package(RapidJSON REQUIRED)
 if(NOT Boost_FOUND)
   message(FATAL_ERROR "WTSS_CXX: could not find required RapidJSON libraries!")
 endif()
@@ -152,8 +151,7 @@ endif()
 #
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${CURL_INCLUDE_DIRS})
-include_directories(${RAPIDJSON_INCLUDE_DIR})
-
+include_directories("3rdparty/rapidjson")
 
 #
 # build targets
@@ -166,12 +164,6 @@ file(GLOB WTSS_CXX_HDR_FILES ${WTSS_CXX_ABSOLUTE_ROOT_DIR}/src/wtss-cxx/*.hpp)
 add_library(wtss_cxx_client SHARED ${WTSS_CXX_SRC_FILES} ${WTSS_CXX_HDR_FILES})
 
 target_link_libraries(wtss_cxx_client ${CURL_LIBRARIES})
-#${Boost_THREAD_LIBRARY}
-#${Boost_DATE_TIME_LIBRARY}
-#${Boost_REGEX_LIBRARY}
-#${Boost_SYSTEM_LIBRARY}
-#${Boost_FILESYSTEM_LIBRARY}
-#${Boost_CHRONO_LIBRARY}
 
 # wtss.cxx unit-test
 include_directories(${WTSS_CXX_ABSOLUTE_ROOT_DIR}/src)

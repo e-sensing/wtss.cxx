@@ -61,6 +61,8 @@ std::string wtss::cxx::request(const std::string &server_uri)
     curl_easy_setopt(curl, CURLOPT_URL, server_uri.c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_response_callback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 10L);
+
     res = curl_easy_perform(curl);
 
     if (res != CURLE_OK)
