@@ -35,7 +35,7 @@
 
 int main(int argc, char* argv[])
 {
-  wtss::cxx::client chronos("http://www.dpi.inpe.br/ts/wtss");
+  wtss::cxx::client chronos("http://www.dpi.inpe.br/tws/wtss");
 
   try
   {
@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
     }
 
     // describing first coverage
-    wtss::cxx::geoarray_t cv = chronos.describe_coverage(coverages.front());
+    wtss::cxx::geoarray_t cv = chronos.describe_coverage(coverages.back());
 
     if (cv.attributes.empty())
     {
@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
 
     // retrieving timeseries for first coverage and its first attribute
     wtss::cxx::timeseries_query_t q;
-    q.coverage_name = coverages.front();
+    q.coverage_name = coverages.back();
     q.attributes.push_back(cv.attributes.front().name);
     q.longitude = -54.0;
     q.latitude = -12;
@@ -80,22 +80,22 @@ int main(int argc, char* argv[])
   {
     if (const std::string* d =
             boost::get_error_info<wtss::cxx::error_description>(e))
-      std::cout << "\n\nthe following error has occurried: " << *d << std::endl;
+      std::cout << "\n\nthe following error has occurred: " << *d << std::endl;
     else
-      std::cout << "\n\nan unknown error has occurried" << std::endl;
+      std::cout << "\n\nan unknown error has occurred" << std::endl;
 
     return EXIT_FAILURE;
   }
   catch (const std::exception& e)
   {
-    std::cout << "\n\nthe following error has occurried: " << e.what()
+    std::cout << "\n\nthe following error has occurred: " << e.what()
               << std::endl;
 
     return EXIT_FAILURE;
   }
   catch (...)
   {
-    std::cout << "\n\nan unknown error has occurried." << std::endl;
+    std::cout << "\n\nan unknown error has occurred." << std::endl;
 
     return EXIT_FAILURE;
   }
