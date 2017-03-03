@@ -35,7 +35,7 @@
 
 int main(int argc, char* argv[])
 {
-  wtss::cxx::client chronos("http://www.dpi.inpe.br/tws/wtss");
+  wtss::cxx::client chronos("http://150.163.2.38:7653/wtss");
 
   try
   {
@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
     }
 
     // describing first coverage
-    wtss::cxx::geoarray_t cv = chronos.describe_coverage(coverages.back());
+    wtss::cxx::geoarray_t cv = chronos.describe_coverage(coverages.front());
 
     if (cv.attributes.empty())
     {
@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
 
     // retrieving timeseries for first coverage and its first attribute
     wtss::cxx::timeseries_query_t q;
-    q.coverage_name = coverages.back();
+    q.coverage_name = coverages.front();
     q.attributes.push_back(cv.attributes.front().name);
     q.longitude = -54.0;
     q.latitude = -12;

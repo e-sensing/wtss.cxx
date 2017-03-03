@@ -143,23 +143,22 @@ wtss::cxx::geoarray_t wtss::cxx::client::describe_coverage(
 
   const rapidjson::Value& j_attributes = doc["attributes"];
 
-  if (!j_dimensions.IsArray())
+  if (!j_dimensions.IsObject())
     throw parse_error() << error_description(
-        "Invalid JSON document: member named \"dimensions\" must be an array!");
+        "Invalid JSON document: member named \"dimensions\" must be an object!");
 
   if (!j_attributes.IsArray())
     throw parse_error() << error_description(
         "Invalid JSON document: member named \"attributes\" must be an array!");
 
-  for (rapidjson::Value::ConstValueIterator itr = j_dimensions.Begin();
-       itr != j_dimensions.End(); ++itr)
+  for (rapidjson::Value::ConstMemberIterator itr = j_dimensions.MemberBegin();
+       itr != j_dimensions.MemberEnd(); ++itr)
   {
     wtss::cxx::dimension_t dimension;
 
-    dimension.name = (*itr)["name"].GetString();
-    dimension.description = (*itr)["description"].GetString();
-    dimension.max_idx = (*itr)["max_idx"].GetInt64();
-    dimension.min_idx = (*itr)["min_idx"].GetInt64();
+    dimension.name = itr->value["name"].GetString();
+    dimension.max_idx = itr->value["max_idx"].GetInt64();
+    dimension.min_idx = itr->value["min_idx"].GetInt64();
 
     result.dimensions.push_back(dimension);
   }
@@ -181,37 +180,64 @@ wtss::cxx::geoarray_t wtss::cxx::client::describe_coverage(
     result.attributes.push_back(attribute);
   }
 
-  const rapidjson::Value& j_geo_extent = doc["geo_extent"];
-
   wtss::cxx::spatial_extent_t spatial_extent;
 
   spatial_extent.extent.xmin =
-      j_geo_extent["spatial"]["extent"]["xmin"].GetDouble();
+      doc["spatial_extent"]["xmin"].GetDouble();
   spatial_extent.extent.xmax =
-      j_geo_extent["spatial"]["extent"]["xmax"].GetDouble();
+       doc["spatial_extent"]["xmax"].GetDouble();
   spatial_extent.extent.ymin =
-      j_geo_extent["spatial"]["extent"]["ymin"].GetDouble();
+      doc["spatial_extent"]["ymin"].GetDouble();
   spatial_extent.extent.ymax =
-      j_geo_extent["spatial"]["extent"]["ymax"].GetDouble();
+       doc["spatial_extent"]["ymax"].GetDouble();
   spatial_extent.resolution.x =
-      j_geo_extent["spatial"]["resolution"]["x"].GetDouble();
+      doc["spatial_resolution"]["x"].GetDouble();
   spatial_extent.resolution.y =
-      j_geo_extent["spatial"]["resolution"]["y"].GetDouble();
+      doc["spatial_resolution"]["y"].GetDouble();
 
-  result.geo_extent.spatial = spatial_extent;
+  result.spatial_extent = spatial_extent;
 
-  wtss::cxx::temporal_extent_t temporal_extent;
+  if (!doc.HasMember("crs"))
+    throw parse_error() << error_description(
+        "Invalid JSON document: expecting a member named \"crs\"!");
 
-  temporal_extent.resolution =
-      j_geo_extent["temporal"]["resolution"].GetInt64();
-  temporal_extent.time_interval.start =
-      j_geo_extent["temporal"]["start"].GetString();
-  temporal_extent.time_interval.end =
-      j_geo_extent["temporal"]["end"].GetString();
-  temporal_extent.unit = wtss::cxx::unit_t::from_string(
-      j_geo_extent["temporal"]["unit"].GetString());
+  result.crs.proj4 = doc["crs"]["proj4"].GetString();
+  result.crs.wkt = doc["crs"]["wkt"].GetString();
 
-  result.geo_extent.temporal = temporal_extent;
+  if (!doc.HasMember("timeline"))
+    throw parse_error() << error_description(
+        "Invalid JSON document: expecting a member named \"timeline\"!");
+
+  const rapidjson::Value& j_timeline = doc["timeline"];
+
+  if (!j_timeline.IsArray())
+    throw parse_error() << error_description(
+        "Invalid JSON document: member named \"timeline\" must be an array!");
+
+  for (rapidjson::Value::ConstValueIterator itr = j_timeline.Begin();
+       itr != j_timeline.End(); ++itr)
+  {
+    const rapidjson::Value& j_date = (*itr);
+    std::vector<std::string> date_split;
+    std::string timeline = j_date.GetString();
+    std::string delimiter = "-";
+    size_t pos = 0;
+    std::string token;
+    while ((pos = timeline.find(delimiter)) != std::string::npos)
+    {
+      token = timeline.substr(0, pos);
+      date_split.push_back(token);
+      timeline.erase(0, pos + delimiter.length());
+    }
+    date_split.push_back(timeline);
+    date d;
+
+    if(date_split.size() > 0) d.year = std::stoi(date_split[0]);
+    if(date_split.size() > 1) d.month = std::stoi(date_split[1]);
+    if(date_split.size() > 2) d.day = std::stoi(date_split[2]);
+
+    result.timeline.push_back(d);
+  }
 
   return result;
 }
@@ -243,9 +269,9 @@ wtss::cxx::timeseries_query_result_t wtss::cxx::client::time_series(
   result.query = query;
 
   if (!query.start_date.empty())
-    query_string.append("&start=" + query.start_date);
+    query_string.append("&start_date=" + query.start_date);
 
-  if (!query.end_date.empty()) query_string.append("&end=" + query.start_date);
+  if (!query.end_date.empty()) query_string.append("&end_date=" + query.start_date);
 
   rapidjson::Document doc;
   doc.Parse<0>(wtss::cxx::request(
@@ -321,6 +347,18 @@ wtss::cxx::timeseries_query_result_t wtss::cxx::client::time_series(
 
     result.coverage.timeline.push_back(d);
   }
+
+  if (!j_result.HasMember("coordinates"))
+    throw parse_error() << error_description(
+        "Invalid JSON document: expecting a member named \"coordinates\"!");
+
+  const rapidjson::Value& j_coordinates = j_result["coordinates"];
+
+  result.coverage.coordinates.longitude =
+      j_coordinates["longitude"].GetDouble();
+  result.coverage.coordinates.latitude = j_coordinates["latitude"].GetDouble();
+  result.coverage.coordinates.col = j_coordinates["col"].GetDouble();
+  result.coverage.coordinates.row = j_coordinates["row"].GetDouble();
 
   return result;
 }
