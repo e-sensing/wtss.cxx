@@ -34,7 +34,7 @@ project(wtss_cxx)
 
 # variables that control the system versioning
 set(WTSS_CXX_VERSION_MAJOR 0)
-set(WTSS_CXX_VERSION_MINOR 3)
+set(WTSS_CXX_VERSION_MINOR 4)
 set(WTSS_CXX_VERSION_PATCH 0)
 set(WTSS_CXX_VERSION_STATUS "")
 set(WTSS_CXX_VERSION_STATUS_FULL "")
