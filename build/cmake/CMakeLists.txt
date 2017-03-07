@@ -151,7 +151,7 @@ endif()
 #
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${CURL_INCLUDE_DIRS})
-include_directories("3rdparty/rapidjson")
+include_directories("${WTSS_CXX_ABSOLUTE_ROOT_DIR}/3rdparty")
 
 #
 # build targets

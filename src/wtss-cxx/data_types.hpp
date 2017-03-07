@@ -197,7 +197,6 @@ namespace wtss
     struct dimension_t
     {
       std::string name;
-      std::string description;
       int64_t min_idx;
       int64_t max_idx;
       std::size_t pos;
@@ -207,7 +206,7 @@ namespace wtss
     {
       extent_t extent;
       spatial_resolution_t resolution;
-      uint32_t crs_code;
+//      uint32_t crs_code;
     };
 
     struct temporal_extent_t
@@ -234,6 +233,12 @@ namespace wtss
       int datatype;
     };
 
+    struct crs_t
+    {
+      std::string proj4;
+      std::string wkt;
+    };
+
     //! Base metadata of an array.
     struct geoarray_t
     {
@@ -242,7 +247,9 @@ namespace wtss
       std::string detail;
       std::vector<attribute_t> attributes;
       std::vector<dimension_t> dimensions;
-      geo_extent_t geo_extent;
+      std::vector<date> timeline;
+      crs_t crs;
+      spatial_extent_t spatial_extent;
     };
 
     struct queried_attribute_t
@@ -251,11 +258,20 @@ namespace wtss
       std::vector<double> values;
     };
 
+    struct coordinates_t
+    {
+      double longitude;
+      double latitude;
+      double col;
+      double row;
+    };
+
     struct queried_coverage_t
     {
       std::string name;
       std::vector<queried_attribute_t> queried_attributes;
       std::vector<date> timeline;
+      coordinates_t coordinates;
     };
 
     struct timeseries_query_t
