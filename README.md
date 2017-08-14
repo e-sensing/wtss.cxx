@@ -162,6 +162,10 @@ This is not supported yet! If you need to build on Windows, please, let us know!
 
 ## Quick Notes for Developers
 
+## References
+
+VINHAS, L.; QUEIROZ, G. R.; FERREIRA, K. R.; CÂMARA, G. [Web Services for Big Earth Observation Data](http://urlib.net/8JMKD3MGP3W34P/3N2U9JL). In: BRAZILIAN SYMPOSIUM ON GEOINFORMATICS, 17. (GEOINFO), 2016, Campos do Jordão, SP. Proceedings... 2016.
+
 ## Reporting Bugs
 
 Any problem should be reported to esensing-team@dpi.inpe.br.
