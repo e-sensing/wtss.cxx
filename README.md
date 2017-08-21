@@ -1,6 +1,8 @@
 # C++ Client API for Web Time Series Service
 
-**wtss.cxx** is a free and open source C++ client library for handling Web Time-Series Service (WTSS) in the client side. For more information on WTSS see  [its specification and documentation in the TWS site](https://github.com/e-sensing/tws). 
+**wtss.cxx** is a free and open source C++ client library for handling Web Time-Series Service (WTSS) at the client side.
+
+If you want to know more about WTSS service, visit the [Earth Observation Web Services homepage](https://github.com/e-sensing/eows) and the [WTSS specification](https://github.com/e-sensing/eows/blob/master/doc/wtss.md).
 
 wtss.cxx is part of the [TerraLib family of geotechnologies](http://www.dpi.inpe.br/terralib5).
 
