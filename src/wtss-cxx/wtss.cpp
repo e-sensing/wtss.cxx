@@ -261,17 +261,20 @@ wtss::cxx::timeseries_query_result_t wtss::cxx::client::time_series(
   strs << query.longitude;
   std::string longitude = strs.str();
 
+  strs.str("");
+  strs << query.start_date;
+  std::string startDate = strs.str();
+  strs.str("");
+  strs << query.end_date;
+  std::string endDate = strs.str();
+
   std::string query_string = "/time_series?coverage=" + query.coverage_name +
                              "&attributes=" + attributes + "&longitude=" +
-                             longitude + "&latitude=" +latitude;
+                             longitude + "&latitude=" + latitude + "&start_date=" +
+                             startDate + "&end_date=" + endDate;
 
   result.coverage.name = query.coverage_name;
   result.query = query;
-
-  if (!query.start_date.empty())
-    query_string.append("&start_date=" + query.start_date);
-
-  if (!query.end_date.empty()) query_string.append("&end_date=" + query.start_date);
 
   rapidjson::Document doc;
   doc.Parse<0>(wtss::cxx::request(
